@@ -230,6 +230,7 @@ export default function App() {
             autoCapitalize="off"
             autoFocus
             inputMode="none"
+            readOnly={/iPad|iPhone|iPod/.test(navigator.userAgent)}
           />
         </div>
 
