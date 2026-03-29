@@ -61,7 +61,7 @@ const LIGHT = {
   btnGrid:     'bg-gray-50 border-gray-200',
   btnDigit:    'bg-white hover:bg-gray-50 text-gray-900 border border-gray-300 font-semibold',
   btnOp:       'bg-gray-100 hover:bg-gray-200 text-gray-600 border border-gray-200',
-  btnBase:     'bg-white hover:bg-gray-100 text-gray-800 border border-gray-200',
+  btnBase:     'bg-gray-100 hover:bg-gray-200 text-gray-600 border border-gray-200',
   btnFn:       'bg-white hover:bg-purple-50 text-purple-700 border border-gray-200',
   btnCE:       'bg-white hover:bg-gray-100 text-gray-500 border border-gray-200',
   btnC:        'bg-red-50 hover:bg-red-100 text-red-600 border border-red-200',
