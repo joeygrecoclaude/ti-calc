@@ -229,6 +229,7 @@ export default function App() {
             autoCorrect="off"
             autoCapitalize="off"
             autoFocus
+            inputMode="none"
           />
         </div>
 
