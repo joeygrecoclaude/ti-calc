@@ -9,12 +9,12 @@ interface HistoryEntry {
 const OPERATOR_START = /^[+\-*/%^]/
 
 const BUTTONS = [
-  ['sin(', 'cos(', 'tan(', 'C', 'CE'],
-  ['sqrt(', 'log(', 'ln(', '(', ')'],
-  ['7', '8', '9', '/', '^'],
-  ['4', '5', '6', '*', 'Ans'],
-  ['1', '2', '3', '-', '='],
-  ['0', '.', 'π', '+', ''],
+  ['sin(', 'cos(', 'tan(', '(', ')'],
+  ['sqrt(', 'log(', 'ln(', 'Ans', '^'],
+  ['7', '8', '9', '/', '*'],
+  ['4', '5', '6', '+', '-'],
+  ['1', '2', '3', '.', '='],
+  ['', '0', '', '', ''],
 ]
 
 const DARK = {
@@ -33,6 +33,8 @@ const DARK = {
   prompt:      'text-green-500',
   inputText:   'text-green-400 placeholder-gray-600 caret-green-400',
   btnGrid:     'bg-gray-900 border-gray-700',
+  btnDigit:    'bg-gray-700 hover:bg-gray-600 text-white',
+  btnOp:       'bg-gray-800 hover:bg-gray-700 text-green-400',
   btnBase:     'bg-gray-800 hover:bg-gray-700 text-green-400',
   btnFn:       'bg-gray-800 hover:bg-gray-700 text-purple-400',
   btnCE:       'bg-gray-700 hover:bg-gray-600 text-gray-300',
@@ -57,6 +59,8 @@ const LIGHT = {
   prompt:      'text-green-600',
   inputText:   'text-gray-900 placeholder-gray-400 caret-green-600',
   btnGrid:     'bg-gray-50 border-gray-200',
+  btnDigit:    'bg-white hover:bg-gray-50 text-gray-900 border border-gray-300 font-semibold',
+  btnOp:       'bg-gray-100 hover:bg-gray-200 text-gray-600 border border-gray-200',
   btnBase:     'bg-white hover:bg-gray-100 text-gray-800 border border-gray-200',
   btnFn:       'bg-white hover:bg-purple-50 text-purple-700 border border-gray-200',
   btnCE:       'bg-white hover:bg-gray-100 text-gray-500 border border-gray-200',
@@ -82,8 +86,10 @@ export default function App() {
     tapeEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [history])
 
+  const isTouch = () => 'ontouchstart' in window || navigator.maxTouchPoints > 0
+
   const focusInput = useCallback(() => {
-    inputRef.current?.focus()
+    if (!isTouch()) inputRef.current?.focus()
   }, [])
 
   const handleSubmit = useCallback(() => {
@@ -152,11 +158,11 @@ export default function App() {
     focusInput()
     if (label === '') return
     if (label === '=') { handleSubmit(); return }
-    if (label === 'C') {
+    if (label === 'Clear All') {
       setHistory([]); setAns(null); setInput(''); setHistoryIndex(null); setDraft('')
       return
     }
-    if (label === 'CE') { setInput(''); setHistoryIndex(null); setDraft(''); return }
+    if (label === 'Clear Entry') { setInput(''); setHistoryIndex(null); setDraft(''); return }
     if (label === 'π') { setInput(prev => prev + 'pi'); return }
     setInput(prev => prev + label)
   }, [focusInput, handleSubmit])
@@ -164,9 +170,11 @@ export default function App() {
   const btnClass = (label: string) => {
     const base = 'rounded py-2 text-xs font-medium select-none transition-colors cursor-pointer'
     if (label === '=') return `${base} ${t.btnEq}`
-    if (label === 'C') return `${base} ${t.btnC}`
-    if (label === 'CE') return `${base} ${t.btnCE}`
+    if (label === 'Clear All') return `${base} ${t.btnC}`
+    if (label === 'Clear Entry') return `${base} ${t.btnCE}`
     if (['sin(', 'cos(', 'tan(', 'sqrt(', 'log(', 'ln('].includes(label)) return `${base} ${t.btnFn}`
+    if (/^[0-9]$/.test(label)) return `${base} ${t.btnDigit}`
+    if (['+', '-', '*', '/', '^'].includes(label)) return `${base} ${t.btnOp}`
     return `${base} ${t.btnBase}`
   }
 
@@ -232,6 +240,19 @@ export default function App() {
             inputMode="none"
             readOnly={/iPad|iPhone|iPod/.test(navigator.userAgent)}
           />
+        </div>
+
+        {/* Clear buttons */}
+        <div className={`${t.btnGrid} border-t px-2 py-2 flex gap-1`}>
+          {(['Clear All', 'Clear Entry'] as const).map(label => (
+            <button
+              key={label}
+              onMouseDown={e => { e.preventDefault(); handleButtonClick(label) }}
+              className={`flex-1 rounded py-2 text-xs font-medium select-none transition-colors cursor-pointer ${label === 'Clear All' ? t.btnC : t.btnCE}`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
 
         {/* Button grid */}
